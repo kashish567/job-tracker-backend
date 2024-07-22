@@ -3,24 +3,33 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const authRouter = require("./controller/auth");
 const jobApplicationRouter = require("./controller/jobApplication");
+const cors = require("cors");
+
+const corsOptions = {
+  origin: "http://localhost:5173", // Frontend URL
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200,
+  credentials: true, // Allow cookies to be sent and received
+};
 
 dotenv.config();
 const app = express();
 
-return Promise.resolve()
+Promise.resolve()
   .then(() => {
-    // mongodb init
-    return mongoose.connect(process.env.MONGO_URI, {}).then((connection) => {
-      console.log("mongo db connection established");
-      // console.log("Connection: ", connection.connection.db)
+    // MongoDB init
+    return mongoose.connect(process.env.MONGO_URI, {}).then(() => {
+      console.log("MongoDB connection established");
     });
   })
   .then(() => {
-    // add middlewares
+    // Add middlewares
+    app.use(cors(corsOptions)); // Add CORS middleware
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    // custom middleware
+    // Custom middleware
     app.use((req, res, next) => {
       console.log(
         `API Logging --- METHOD: ${req.method} URL: ${req.originalUrl} BODY: ${
@@ -39,9 +48,8 @@ return Promise.resolve()
     app.use("/job-application", jobApplicationRouter);
   })
   .then(() => {
-    // error handler middleware
+    // Error handler middleware
     app.use((err, req, res, next) => {
-      // console.error(err)
       res.status(400).json({
         message: "Request failed.",
         data: {},
@@ -52,11 +60,11 @@ return Promise.resolve()
   })
   .then(() => {
     app.listen(process.env.PORT, () => {
-      console.log(`job tracker api is running on port ${process.env.PORT}`);
+      console.log(`Job tracker API is running on port ${process.env.PORT}`);
     });
   })
   .catch((error) => {
-    console.log("job tracker api start error");
+    console.log("Job tracker API start error");
     console.log("Error: ", error);
     process.exit(1);
   });

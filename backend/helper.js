@@ -1,11 +1,11 @@
 function sendResponse(res, data, statusCode = 200) {
-    return res.status(statusCode).json({
-        message: "Request successful.",
-        data: data,
-        error: null
-    })
+  res.status(statusCode).json({
+    message: statusCode === 200 ? "Request successful." : "Request failed.",
+    data: data || {},
+    error: null,
+  });
 }
 
 module.exports = {
-    sendResponse
-}
+  sendResponse,
+};

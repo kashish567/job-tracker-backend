@@ -14,36 +14,40 @@ authRouter.get("/", (req, res, next) => {
 
 authRouter.post("/register", async (req, res, next) => {
   try {
-    const { email, password } = User(req.body);
+    const { email, password } = req.body;
 
     if (!email || !password) {
-      return sendResponse(res, "provide email and password", 400);
+      return sendResponse(res, { message: "Provide email and password" }, 400);
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return sendResponse(res, { message: "User already exists" }, 400);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({ email, password: hashedPassword });
 
-    if (!user) {
-      return sendResponse(res, "User already exists", 400);
-    }
-
     const token = jwt.sign(
       { email: user.email, user_id: user._id },
       process.env.JWT_SECRET
     );
 
+    // Set the cookie without considering production or secure
+    res.cookie("token", token, { httpOnly: true });
+
     return sendResponse(res, { token });
   } catch (error) {
-    return sendResponse(res, error.message, 500);
+    return sendResponse(res, { message: error.message }, 500);
   }
 });
 
 authRouter.post("/login", async (req, res, next) => {
-  const { email, password } = User(req.body);
+  const { email, password } = req.body;
 
   if (!email || !password) {
-    return sendResponse(res, "provide email and password", 400);
+    return sendResponse(res, "Provide email and password", 400);
   }
 
   const user = await User.findOne({ email });
@@ -63,6 +67,9 @@ authRouter.post("/login", async (req, res, next) => {
     process.env.JWT_SECRET
   );
 
+  // Set the cookie without considering production or secure
+  res.cookie("token", token, { httpOnly: true });
+  
   return sendResponse(res, { token });
 });
 
@@ -70,7 +77,7 @@ authRouter.post("/verifyjwt", async (req, res, next) => {
   const { token } = req.body;
 
   if (!token) {
-    return sendResponse(res, "provide token", 400);
+    return sendResponse(res, { message: "Provide token" }, 400);
   }
 
   try {
