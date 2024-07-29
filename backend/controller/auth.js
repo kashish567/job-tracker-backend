@@ -34,7 +34,6 @@ authRouter.post("/register", async (req, res, next) => {
       process.env.JWT_SECRET
     );
 
-    // Set the cookie without considering production or secure
     res.cookie("token", token, { httpOnly: true });
 
     return sendResponse(res, { token });
@@ -67,7 +66,6 @@ authRouter.post("/login", async (req, res, next) => {
     process.env.JWT_SECRET
   );
 
-  // Set the cookie without considering production or secure
   res.cookie("token", token, { httpOnly: true });
   
   return sendResponse(res, { token });

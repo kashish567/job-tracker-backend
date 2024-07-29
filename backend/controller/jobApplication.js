@@ -61,10 +61,12 @@ jobApplicationRouter.get("/:id", async (req, res, next) => {
 jobApplicationRouter.post("/", async (req, res, next) => {
   try {
     const token = req.headers.authorization;
+    console.log(token);
     if (!token) {
-      return sendResponse(res, "Provide token", 400);
+      return sendResponse(res, { message: "Provide token" }, 400);
     }
-    const user_uid = await decodeUserId(res, token);
+
+    const user_uid = await decodeUserId(token);
 
     const companyData = req.body;
     const jobApplication = await JobApplicationModel.create({
@@ -74,7 +76,8 @@ jobApplicationRouter.post("/", async (req, res, next) => {
 
     return sendResponse(res, jobApplication);
   } catch (error) {
-    return sendResponse(res, error.message, 500);
+    console.log(error.message);
+    return sendResponse(res, { message: error.message }, 500);
   }
 });
 
