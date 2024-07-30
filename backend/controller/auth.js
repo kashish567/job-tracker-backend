@@ -34,8 +34,7 @@ authRouter.post("/register", async (req, res, next) => {
       process.env.JWT_SECRET
     );
 
-    res.cookie("token", token, { httpOnly: true });
-
+    // Removed res.cookie() line
     return sendResponse(res, { token });
   } catch (error) {
     return sendResponse(res, { message: error.message }, 500);
@@ -66,8 +65,7 @@ authRouter.post("/login", async (req, res, next) => {
     process.env.JWT_SECRET
   );
 
-  res.cookie("token", token, { httpOnly: true });
-  
+  // Removed res.cookie() line
   return sendResponse(res, { token });
 });
 
