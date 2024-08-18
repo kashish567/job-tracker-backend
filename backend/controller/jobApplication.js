@@ -19,10 +19,8 @@ async function decodeUserId(res, token) {
 jobApplicationRouter.get("/", async (req, res, next) => {
   try {
     const authorizationHeader = req.headers.authorization;
-    console.log(authorizationHeader);
     if (!authorizationHeader) {
-      console.log("---------------------------------------------------");
-      // return sendResponse(res, { message: "Provide token" }, 400);
+      return sendResponse(res, { message: "Provide token" }, 400);
     }
 
     const token = authorizationHeader.split(" ")[1];
@@ -74,11 +72,16 @@ jobApplicationRouter.get("/:id", async (req, res, next) => {
 jobApplicationRouter.post("/", async (req, res, next) => {
   try {
     const authorizationHeader = req.headers.authorization;
+    console.log(
+      "jgnvghghbvb hnfvgjb hgfjhvnfjhvhjfv heh he e  e",
+      authorizationHeader
+    );
     if (!authorizationHeader) {
       return sendResponse(res, { message: "Provide token" }, 400);
     }
-    const token = authorizationHeader.split(" ")[1];
-    const user_uid = await decodeUserId(res, token);
+
+    const user_uid = await decodeUserId(res, authorizationHeader);
+    console.log("user", user_uid);
     if (!user_uid) {
       return; // decodeUserId sends the response in case of error
     }
@@ -88,7 +91,7 @@ jobApplicationRouter.post("/", async (req, res, next) => {
       ...companyData,
       user: user_uid,
     });
-    console.log("Job application created:", jobApplication);
+    // console.log("Job application created:", jobApplication);
 
     return sendResponse(res, jobApplication);
   } catch (error) {
